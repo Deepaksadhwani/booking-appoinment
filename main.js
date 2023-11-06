@@ -373,7 +373,7 @@ function onSubmit(e) {
     nameInput.value = '';
     emailInput.value = '';
 
-     // Save data to local storage
+     // Save data to local Storage
      const userArray = JSON.parse(localStorage.getItem('users')) || [];
      userArray.push({ name: nameInput.value, email: emailInput.value });
      localStorage.setItem('users', JSON.stringify(userArray));
