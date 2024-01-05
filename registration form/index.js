@@ -29,76 +29,81 @@ form.addEventListener("submit", function (e) {
         const key = "formData_" + Date.now();
 
         // Store the form data with the unique key
-        axios.post("https://crudcrud.com/api/2ecac696aa5b4ec7bdda39d0ee4683dd/appointmentData",formDetail)
+        axios.post("https://crudcrud.com/api/2ecac696aa5b4ec7bdda39d0ee4683dd/appointmentData", formDetail)
             .then((res) => {
-                console.log
+                console.log(res);
+                // Refresh the displayed data
+                displayStoredData();
             })
             .catch((err) =>
-            console.log(err))
-  // localStorage.setItem(key, JSON.stringify(formDetail));
+                console.log(err));
     }
 
     // Reset the form fields
     form.reset();
-
-    // Display the stored data
-    displayStoredData();
 });
 
 function displayStoredData() {
     displayArea.innerHTML = "";
 
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        const formData = JSON.parse(localStorage.getItem(key));
+    // Fetch data using axios.get
+    axios.get("https://crudcrud.com/api/2ecac696aa5b4ec7bdda39d0ee4683dd/appointmentData")
+        .then((res) => {
+            console.log(res);
+            res.data.forEach((formData) => {
+                const displayDataDiv = document.createElement("div");
+                displayDataDiv.innerHTML = `
+                    <p>Name: ${formData.name}</p>
+                    <p>Email: ${formData.email}</p>
+                    <p>Phone: ${formData.phone}</p>
+                    <button class="edit-button" data-key="${formData._id}">Edit</button>
+                    <button class="delete-button" data-key="${formData._id}">Delete</button>
+                `;
+                displayArea.appendChild(displayDataDiv);
+            });
 
-        const displayDataDiv = document.createElement("div");
-        displayDataDiv.innerHTML = `
-            <p>Name: ${formData.name}</p>
-            <p>Email: ${formData.email}</p>
-            <p>Phone: ${formData.phone}</p>
-            <button class="edit-button" data-key="${key}">Edit</button>
-            <button class="delete-button" data-key="${key}">Delete</button>
-        `;
+            // Add event listeners to the edit buttons
+            const editButtons = document.querySelectorAll(".edit-button");
+            editButtons.forEach((button) => {
+                button.addEventListener("click", function (e) {
+                    e.preventDefault();
 
-        displayArea.appendChild(displayDataDiv);
-    }
+                    // Set editKey using the data-key attribute
+                    editKey = this.getAttribute("data-key");
+                    const formData = res.data.find(data => data._id === editKey);
 
-    // Add event listeners to the edit buttons
-   // Add event listeners to the edit buttons
-const editButtons = document.querySelectorAll(".edit-button");
-editButtons.forEach((button) => {
-    button.addEventListener("click", function (e) {
-        e.preventDefault();
+                    // Populate the form with data for editing
+                    Name.value = formData.name;
+                    email.value = formData.email;
+                    phone.value = formData.phone;
 
-        // Set editKey using the data-key attribute
-        editKey = this.getAttribute("data-key");
-        const formData = JSON.parse(localStorage.getItem(editKey));
+                    // Reset editKey after handling the edit
+                    editKey = null;
+                });
+            });
 
-        // Populate the form with data for editing
-        Name.value = formData.name;
-        email.value = formData.email;
-        phone.value = formData.phone;
+            // Add event listeners to the delete buttons
+            const deleteButtons = document.querySelectorAll(".delete-button");
+            deleteButtons.forEach((button) => {
+                button.addEventListener("click", function () {
+                    const keyToDelete = this.getAttribute("data-key");
 
-        // Remove the entry from localStorage and the display
-        localStorage.removeItem(editKey);
-        this.parentElement.remove();
-
-        // Reset editKey after handling the edit
-        editKey = null;
-    });
-});
-
-
-    // Add event listeners to the delete buttons
-    const deleteButtons = document.querySelectorAll(".delete-button");
-    deleteButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-            const keyToDelete = this.getAttribute("data-key");
-            localStorage.removeItem(keyToDelete); // Remove from local storage
-            this.parentElement.remove(); // Remove from display
+                    // Remove from the API
+                    axios.delete(`https://crudcrud.com/api/2ecac696aa5b4ec7bdda39d0ee4683dd/appointmentData/${keyToDelete}`)
+                        .then((res) => {
+                            console.log(res);
+                            // Refresh the displayed data
+                            displayStoredData();
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+                });
+            });
+        })
+        .catch((err) => {
+            console.log(err);
         });
-    });
 }
 
 // Display any existing stored data when the page loads
