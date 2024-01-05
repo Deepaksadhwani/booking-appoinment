@@ -59,18 +59,30 @@ function displayStoredData() {
     }
 
     // Add event listeners to the edit buttons
-    const editButtons = document.querySelectorAll(".edit-button");
-    editButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-            editKey = this.getAttribute("data-key");
-            const formData = JSON.parse(localStorage.getItem(editKey));
+   // Add event listeners to the edit buttons
+const editButtons = document.querySelectorAll(".edit-button");
+editButtons.forEach((button) => {
+    button.addEventListener("click", function (e) {
+        e.preventDefault();
 
-            // Populate the form with data for editing
-            Name.value = formData.name;
-            email.value = formData.email;
-            phone.value = formData.phone;
-        });
+        // Set editKey using the data-key attribute
+        editKey = this.getAttribute("data-key");
+        const formData = JSON.parse(localStorage.getItem(editKey));
+
+        // Populate the form with data for editing
+        Name.value = formData.name;
+        email.value = formData.email;
+        phone.value = formData.phone;
+
+        // Remove the entry from localStorage and the display
+        localStorage.removeItem(editKey);
+        this.parentElement.remove();
+
+        // Reset editKey after handling the edit
+        editKey = null;
     });
+});
+
 
     // Add event listeners to the delete buttons
     const deleteButtons = document.querySelectorAll(".delete-button");
