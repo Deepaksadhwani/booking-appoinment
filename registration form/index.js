@@ -88,11 +88,9 @@ function displayStoredData() {
                 button.addEventListener("click", function () {
                     const keyToDelete = this.getAttribute("data-key");
 
-                    // Remove from the API
                     axios.delete(`https://crudcrud.com/api/2ecac696aa5b4ec7bdda39d0ee4683dd/appointmentData/${keyToDelete}`)
                         .then((res) => {
                             console.log(res);
-                            // Refresh the displayed data
                             displayStoredData();
                         })
                         .catch((err) => {
