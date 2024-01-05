@@ -29,7 +29,13 @@ form.addEventListener("submit", function (e) {
         const key = "formData_" + Date.now();
 
         // Store the form data with the unique key
-        localStorage.setItem(key, JSON.stringify(formDetail));
+        axios.post("https://crudcrud.com/api/2ecac696aa5b4ec7bdda39d0ee4683dd/appointmentData",formDetail)
+            .then((res) => {
+                console.log
+            })
+            .catch((err) =>
+            console.log(err))
+  // localStorage.setItem(key, JSON.stringify(formDetail));
     }
 
     // Reset the form fields
