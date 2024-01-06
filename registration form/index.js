@@ -79,6 +79,51 @@ function displayStoredData() {
 
                     // Reset editKey after handling the edit
                     editKey = null;
+                    axios.put("https://crudcrud.com/api/2ecac696aa5b4ec7bdda39d0ee4683dd/appointmentData",formData)
+                    // Add event listeners to the edit buttons
+const editButtons = document.querySelectorAll(".edit-button");
+editButtons.forEach((button) => {
+    button.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        // Set editKey using the data-key attribute
+        editKey = this.getAttribute("data-key");
+        const formDataIndex = res.data.findIndex(data => data._id === editKey);
+
+        if (formDataIndex !== -1) {
+            // Populate the form with data for editing
+            const formData = res.data[formDataIndex];
+            Name.value = formData.name;
+            email.value = formData.email;
+            phone.value = formData.phone;
+
+            // Add event listener to the form for updating edited data
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                // Update the existing data
+                res.data[formDataIndex].name = Name.value;
+                res.data[formDataIndex].email = email.value;
+                res.data[formDataIndex].phone = phone.value;
+
+                // Make a PUT request to update the data in the API
+                axios.put(`https://crudcrud.com/api/2ecac696aa5b4ec7bdda39d0ee4683dd/appointmentData/${editKey}`, res.data[formDataIndex])
+                    .then((res) => {
+                        console.log(res);
+                        // Refresh the displayed data
+                        displayStoredData();
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+                // Reset the form fields and editKey
+                form.reset();
+                editKey = null;
+            });
+        }
+    });
+});
+
                 });
             });
 
